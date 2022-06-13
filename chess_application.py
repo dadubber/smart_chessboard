@@ -60,6 +60,13 @@ START_POS = {
 }
 
 
+class Square(Button):
+    def __init__(self, colour, **kwargs):
+        self.colour = colour
+        super().__init__(**kwargs)
+        return
+
+
 class ChessApp(App):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -78,7 +85,8 @@ class ChessApp(App):
             for j in range(8):
                 row_num = 8 - i
                 col_char = CHAR_DIC[j]
-                square = Button(background_normal="", background_color=self.get_color(i, j))
+                color_code, color = self.get_color(i, j)
+                square = Square(background_normal="", background_color=color_code, colour=color)
                 board_row.add_widget(square)
                 self.root.ids['{}_{}'.format(col_char, row_num)] = square
             self.board.add_widget(board_row)
@@ -99,13 +107,15 @@ class ChessApp(App):
             if id != 'chess_board':
                 square = self.root.ids[id]
                 if id in START_POS:
-                    if id in [key for key in START_POS if 'Black' in START_POS[key]]:
+                    if square.colour == 'White':
                         square.background_normal = "pictures\\{}.png".format(START_POS[id])
                     else:
                         square.background_color = [1, 1, 1, 1]
                         square.background_normal = "pictures\\{}BackBlack.png".format(START_POS[id])
                 else:
                     square.background_normal = ""
+                    if square.colour == 'Black':
+                        square.background_color = [0, 0, 0, 1]
         return
 
     def turn_on_help(self, _):
@@ -117,9 +127,9 @@ class ChessApp(App):
     def get_color(self, i, j):
         is_light_square = (i + j) % 2 != 0
         if is_light_square:
-            return [1, 1, 1, 1]
+            return [1, 1, 1, 1], 'White'
         else:
-            return [0, 0, 0, 1]
+            return [0, 0, 0, 1], 'Black'
 
 
 if __name__ == '__main__':
