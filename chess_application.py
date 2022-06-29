@@ -4,6 +4,7 @@ from kivy.lang.builder import Builder
 from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.uix.togglebutton import ToggleButton
 
 KV = """
@@ -73,6 +74,7 @@ class ChessApp(App):
         self.board = None
         self.help = False
         self.memory_board = chess.Board()
+        self.num_of_rows = 2
 
     def build(self):
         Window.size = [800, 800]
@@ -80,17 +82,17 @@ class ChessApp(App):
 
     def on_start(self):
         self.board = self.root.ids.chess_board
-        for i in range(8):
+        for i in range(self.num_of_rows):
             board_row = BoxLayout(orientation='horizontal')
-            for j in range(8):
-                row_num = 8 - i
+            for j in range(self.num_of_rows):
+                row_num = self.num_of_rows - i
                 col_char = CHAR_DIC[j]
                 color_code, color = self.get_color(i, j)
                 square = Square(background_normal="", background_color=color_code, colour=color)
                 board_row.add_widget(square)
                 self.root.ids['{}_{}'.format(col_char, row_num)] = square
             self.board.add_widget(board_row)
-        self.reset_board()
+        # self.reset_board()
         # Add button to turn help on
         help_button = ToggleButton(text='Turn on help')
         help_button.bind(on_press=self.turn_on_help)
@@ -100,6 +102,9 @@ class ChessApp(App):
         reset_button = Button(text='Reset')
         reset_button.bind(on_press=self.reset_board)
         self.board.add_widget(reset_button)
+        # Add display
+        display_box = Label(text='Display')
+        self.board.add_widget(display_box)
         return
 
     def reset_board(self, _=None):
